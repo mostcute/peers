@@ -1,6 +1,7 @@
 package peers
 
 import (
+	"github.com/libp2p/go-libp2p-core/peer"
 	"log"
 	"time"
 )
@@ -38,7 +39,11 @@ func (pm *PeerManager) run() error {
 	go pm.handleEvents()
 	return nil
 }
+func (pm *PeerManager) ListPeers(msg Msg) []peer.ID {
+	peers := pm.cr.ListPeers()
+	return peers
 
+}
 func (pm *PeerManager) SendMsg(msg Msg) {
 	pm.inputCh <- msg
 
