@@ -39,7 +39,7 @@ func (pm *PeerManager) run() error {
 	go pm.handleEvents()
 	return nil
 }
-func (pm *PeerManager) ListPeers(msg Msg) []peer.ID {
+func (pm *PeerManager) ListPeers() []peer.ID {
 	peers := pm.cr.ListPeers()
 	return peers
 
