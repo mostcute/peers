@@ -24,7 +24,7 @@ type PeerManager struct {
 }
 
 func newPeerManager(cr *ChatRoom, event HandleEvents) *PeerManager {
-	inputCh := make(chan Msg, 32)
+	inputCh := make(chan Msg, 1024)
 
 	return &PeerManager{
 		cr:      cr,
@@ -58,23 +58,30 @@ func (pm *PeerManager) handleEvents() {
 		select {
 		case input := <-pm.inputCh:
 			// when the user types in a line, publish it to the chat room and print to the message window
-			err := pm.cr.Publish(input)
-			if err != nil {
-				log.Printf("publish error: %s\n", err.Error())
-			}
-			//flush it self, pubsub can not receive from ownself
-			pm.eventF.HandleEventSelf(&ChatMessage{
-				Message:    input,
-				SenderID:   pm.cr.self.Pretty(),
-				SenderNick: pm.cr.nick,
-			})
+			go func() {
+				err := pm.cr.Publish(input)
+				if err != nil {
+					log.Printf("publish error: %s\n", err.Error())
+				}
+			}()
+			go func() {
+				//flush it self, pubsub can not receive from ownself
+				pm.eventF.HandleEventSelf(&ChatMessage{
+					Message:    input,
+					SenderID:   pm.cr.self.Pretty(),
+					SenderNick: pm.cr.nick,
+				})
+			}()
 
 		case m := <-pm.cr.Messages:
 			// when we receive a message from the chat room, print it to the message window
 			//handle msgs
 			//log.Println("received msg from ",m.SenderNick)
 			//FlushDiskInfo(m.Message)
-			pm.eventF.HandleEvent(m)
+			go func() {
+				pm.eventF.HandleEvent(m)
+			}()
+
 		case <-peerRefreshTicker.C:
 
 		case <-pm.cr.ctx.Done():
