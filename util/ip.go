@@ -37,3 +37,20 @@ func GetHostip(prefer string) string {
 	}
 	return ipret
 }
+
+func GetHostipList() []string {
+	addrs, err := net.InterfaceAddrs()
+	var ip []string
+	if err == nil {
+		for _, a := range addrs {
+			if ipnet, ok := a.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+				if ipnet.IP.To4() != nil {
+					//log.Infof("get_hostip:%s", ipnet.IP.String())
+					ip = append(ip, ipnet.IP.String())
+					//return ipnet.IP.String()
+				}
+			}
+		}
+	}
+	return ip
+}
