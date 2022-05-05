@@ -24,7 +24,7 @@ type PeerManager struct {
 }
 
 func newPeerManager(cr *ChatRoom, event HandleEvents) *PeerManager {
-	inputCh := make(chan Msg, 32)
+	inputCh := make(chan Msg, 1024*1024)
 
 	return &PeerManager{
 		cr:      cr,
@@ -68,13 +68,13 @@ func (pm *PeerManager) handleEvents() {
 				SenderID:   pm.cr.self.Pretty(),
 				SenderNick: pm.cr.nick,
 			})
-
 		case m := <-pm.cr.Messages:
 			// when we receive a message from the chat room, print it to the message window
 			//handle msgs
 			//log.Println("received msg from ",m.SenderNick)
 			//FlushDiskInfo(m.Message)
 			pm.eventF.HandleEvent(m)
+
 		case <-peerRefreshTicker.C:
 
 		case <-pm.cr.ctx.Done():
