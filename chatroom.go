@@ -9,7 +9,7 @@ import (
 )
 
 // ChatRoomBufSize is the number of incoming messages to buffer for each topic.
-const ChatRoomBufSize = 128
+const ChatRoomBufSize = 65535
 
 // ChatRoom represents a subscription to a single PubSub topic. Messages
 // can be published to the topic with ChatRoom.Publish, and received
@@ -45,7 +45,7 @@ func joinChatRoom(ctx context.Context, ps *pubsub.PubSub, selfID peer.ID, nickna
 	}
 
 	// and subscribe to it
-	sub, err := topic.Subscribe()
+	sub, err := topic.Subscribe(pubsub.WithBufferSize(1024))
 	if err != nil {
 		return nil, err
 	}
