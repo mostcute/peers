@@ -123,7 +123,7 @@ func (n *discoveryNotifee) HandlePeerFound(pi peer.AddrInfo) {
 		if util.ErrorContains(err.Error(), util.ErrDialSelf) {
 
 		} else {
-			fmt.Printf("error connecting to peer %s: ,addrs %s: %s\n", pi.ID.Pretty(), pi.Addrs, err)
+			fmt.Printf("error connecting to peer %s: ,addrs %s: %s\n", pi.ID.String(), pi.Addrs, err)
 		}
 	}
 }

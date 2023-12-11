@@ -1,9 +1,10 @@
 package peers
 
 import (
-	"github.com/libp2p/go-libp2p/core/peer"
 	"log"
 	"time"
+
+	"github.com/libp2p/go-libp2p/core/peer"
 )
 
 type Msg struct {
@@ -65,7 +66,7 @@ func (pm *PeerManager) handleEvents() {
 			//flush it self, pubsub can not receive from ownself
 			pm.eventF.HandleEventSelf(&ChatMessage{
 				Message:    input,
-				SenderID:   pm.cr.self.Pretty(),
+				SenderID:   pm.cr.self.String(),
 				SenderNick: pm.cr.nick,
 			})
 		case m := <-pm.cr.Messages:

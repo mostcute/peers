@@ -3,6 +3,7 @@ package peers
 import (
 	"context"
 	"encoding/json"
+
 	"github.com/libp2p/go-libp2p/core/peer"
 
 	pubsub "github.com/libp2p/go-libp2p-pubsub"
@@ -70,7 +71,7 @@ func joinChatRoom(ctx context.Context, ps *pubsub.PubSub, selfID peer.ID, nickna
 func (cr *ChatRoom) Publish(message Msg) error {
 	m := ChatMessage{
 		Message:    message,
-		SenderID:   cr.self.Pretty(),
+		SenderID:   cr.self.String(),
 		SenderNick: cr.nick,
 	}
 	msgBytes, err := json.Marshal(m)
