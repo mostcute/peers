@@ -535,4 +535,3 @@ func createDB(dbdir string) (*pebbleDs.Datastore, error) {
 	return ds, nil
 }
 
-\
