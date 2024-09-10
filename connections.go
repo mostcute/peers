@@ -63,11 +63,17 @@ func NewPeerNode(nick, room, mdns, nodepriv, extAddr, datadir string, event Hand
 	ctx := context.Background()
 	// create a new libp2p Host that listens on a random TCP port
 	///ip4/%s/tcp/%d
-	extMultiAddr, err := multiaddr.NewMultiaddr(extAddr)
-	if err != nil {
-		fmt.Printf("Error creating multiaddress: %v\n", err)
-		return
+	var extMultiAddr multiaddr.Multiaddr
+	if extAddr != "" {
+		extMultiAddr, err = multiaddr.NewMultiaddr(extAddr)
+		if err != nil {
+			fmt.Printf("Error creating multiaddress: %v\n", err)
+			extMultiAddr = nil
+		}
+	} else {
+		extMultiAddr = nil
 	}
+
 	addressFactory := func(addrs []multiaddr.Multiaddr) []multiaddr.Multiaddr {
 		if extMultiAddr != nil {
 			addrs = append(addrs, extMultiAddr)
