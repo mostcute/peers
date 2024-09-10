@@ -90,12 +90,12 @@ func NewPeerNode(nick, room, mdns, nodepriv, extAddr, datadir string, event Hand
 		libp2p.EnableHolePunching(),
 		libp2p.AddrsFactory(addressFactory),
 	)
-
 	if err != nil {
 		panic(err)
 	}
+	h = Host
 	fmt.Println("listen addrs ", Host.Addrs())
-
+	fmt.Println("mutiaddr: ",GetHostAddress(Host))
 	//bitswap server
 	startBitswapDataServer(ctx, Host, datadir)
 
@@ -534,3 +534,5 @@ func createDB(dbdir string) (*pebbleDs.Datastore, error) {
 	cache.Unref()
 	return ds, nil
 }
+
+\
