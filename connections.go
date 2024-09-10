@@ -333,7 +333,6 @@ func connectdhtpeers(h host.Host, peerChan <-chan peer.AddrInfo, relaypeer strin
 		}
 		fmt.Println("Connected to:", peer)
 	}
-	select {}
 }
 
 func GetHostAddress(h host.Host) string {
