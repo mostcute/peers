@@ -3,12 +3,13 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/mostcute/peers"
 	"os"
 	"sync"
 	"time"
+
+	"github.com/mostcute/peers"
+	"github.com/mostcute/peers/util"
 )
-import "github.com/mostcute/peers/util"
 
 var Dogs sync.Map
 var StartTime = time.Now().Unix()
@@ -18,7 +19,16 @@ var StartTime = time.Now().Unix()
 
 func main() {
 	var p Peermanager
-	pm, _, err := peers.NewPeerNode(util.GetHostip("192.168"), "dogs", "dogs-mdns", p)
+
+	peer, err := peers.NewPeer(util.GetHostip("192.168"), "/root/code/data/store1",
+		peers.EnableMDNS("dogs2", "dogs-mdn2s"),
+		peers.SetPort("6663"),
+		peers.EnablePeerManage(p),
+	)
+	if err != nil {
+		return
+	}
+	// pm, _, err := peers.NewPeerNode(util.GetHostip("192.168"), "dogs", "dogs-mdns", p)
 	if err != nil {
 		return
 	}
@@ -28,6 +38,7 @@ func main() {
 	}()
 	for {
 		db := dogheartbeat{
+			Area:      "zz",
 			Name:      util.GetHostip("192.168") + ":" + os.Getenv("TEST"),
 			StartTime: StartTime,
 		}
@@ -35,7 +46,7 @@ func main() {
 		if err != nil {
 			fmt.Println(err)
 		}
-		pm.SendMsg(peers.Msg{
+		peer.PM.SendMsg(peers.Msg{
 			Name: "peerdiscover",
 			Data: msgdata,
 		})
@@ -56,6 +67,7 @@ func (p Peermanager) HandleEvent(msg *peers.ChatMessage) {
 		if err != nil {
 			fmt.Println(err)
 		}
+		a.ID = msg.SenderID
 		a.RecentTime = time.Now().Unix()
 		Dogs.Store(a.Name, a)
 		//case "othermsg":
@@ -77,6 +89,7 @@ func (p Peermanager) HandleEventSelf(msg *peers.ChatMessage) {
 		if err != nil {
 			fmt.Println(err)
 		}
+		a.ID = msg.SenderID
 		a.RecentTime = time.Now().Unix()
 		Dogs.Store(a.Name, a)
 		//case "othermsg":
@@ -86,6 +99,8 @@ func (p Peermanager) HandleEventSelf(msg *peers.ChatMessage) {
 
 type dogheartbeat struct {
 	Name       string
+	Area       string
+	ID         string
 	RecentTime int64
 	StartTime  int64
 	Err        string
@@ -108,7 +123,7 @@ func printpeers() {
 			//disk heartbeat > 10 sec == offline or < -1 sec == time not sync
 			if now-v.RecentTime > 10 || now-v.RecentTime < -1 || v.Err != "" {
 			} else {
-				fmt.Println(v.Name)
+				fmt.Println(v.Area+"-"+v.Name+"-", v.ID)
 			}
 			return true
 		})
