@@ -3,6 +3,7 @@ package peers
 import (
 	"context"
 	"crypto/rand"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"io"
@@ -70,6 +71,7 @@ type Peer struct {
 	event               HandleEvents
 	bootstrappeer       []string //pub bootstrap
 	relaypeer           []string
+	privatenet          string
 	isBootstrap         bool
 	isRelay             bool
 	ispeermanage        bool
@@ -144,17 +146,9 @@ func (p *Peer) start() {
 	allconfig = append(allconfig, libp2p.AddrsFactory(addressFactory))
 
 	if p.useprivnet {
-		pkey := []byte{}
-		if FileExist(p.datadir + "/" + IDpnet) {
-			data, err := os.ReadFile(p.datadir + "/" + IDpnet)
-			if err != nil {
-				panic(err)
-			}
-			pkey = data
-		} else {
-			key := Genpsk()
-			pkey = key
-			os.WriteFile(p.datadir+"/"+IDpnet, []byte(key), os.ModePerm)
+		pkey, err := hex.DecodeString(p.privatenet)
+		if err != nil {
+			panic(err)
 		}
 		allconfig = append(allconfig, libp2p.PrivateNetwork(pkey))
 	}
@@ -332,9 +326,10 @@ func EnableBitSwap(server, client bool) Option {
 }
 
 // use priv network
-func EnablePrivNet(en bool) Option {
+func EnablePrivNet(en bool, pk string) Option {
 	return func(cfg *Peer) error {
 		cfg.useprivnet = en
+		cfg.privatenet = pk
 		return nil
 	}
 }
