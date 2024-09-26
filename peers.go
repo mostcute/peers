@@ -377,7 +377,7 @@ func EnableDHT(isboot bool, bootstrap ...string) Option {
 }
 
 // DHT bootstrap
-func EnableRelay(isrelay bool, bootstrap ...string) Option {
+func EnableRelay(isrelay bool) Option {
 	return func(cfg *Peer) error {
 		cfg.isRelay = isrelay
 		return nil
