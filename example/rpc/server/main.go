@@ -30,7 +30,7 @@ func server() {
 
 	peer, err := peers.NewPeer(util.GetHostip("192.168"), "/root/code/data/store1",
 		peers.SetPort("6663"),
-		peers.EnablePrivNet(true),
+		peers.EnablePrivNet(true,""),
 	)
 	if err != nil {
 		return
@@ -52,7 +52,7 @@ func server() {
 func client() {
 	peer, err := peers.NewPeer(util.GetHostip("192.168"), "/root/code/data/store1",
 		// peers.SetPort("6663"),
-		peers.EnablePrivNet(true),
+		peers.EnablePrivNet(true,""),
 	)
 	if err != nil {
 		return

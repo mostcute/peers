@@ -157,15 +157,15 @@ func (p *Peer) start() {
 	Host, err := libp2p.New(
 		allconfig...,
 	)
-
+	if err != nil {
+		panic(err)
+	}
 	if p.storeIdentity {
 		if !FileExist(p.datadir + "/" + IDpub) {
 			os.WriteFile(p.datadir+"/"+IDpub, []byte(Host.ID().String()), os.ModePerm)
 		}
 	}
-	if err != nil {
-		panic(err)
-	}
+
 	ctx := context.Background()
 
 	var kademliaDHT *dht.IpfsDHT
